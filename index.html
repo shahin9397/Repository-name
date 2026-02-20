@@ -3,117 +3,112 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quran Live Stream - Video Edition</title>
+    <title>Quran 30 Para Live</title>
     <style>
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #000; font-family: 'Arial', sans-serif; }
-        
-        /* ভিডিও ব্যাকগ্রাউন্ড ইফেক্ট */
-        .video-container {
+
+        /* ১. ইমেজের বিকল্প লিঙ্ক (যাতে সবখানে সাপোর্ট করে) */
+        .video-bg {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-image: url('https://img.youtube.com/vi/EIDGl0qs71C/maxresdefault.jpg'); 
+            /* আমরা এখানে সরাসরি ইমেজ লিঙ্ক ব্যবহার করছি যা ইউটিউব সার্ভার থেকে আসবে */
+            background-image: url('https://i.ytimg.com/vi/EIDGl0qs71C/maxresdefault.jpg');
             background-size: cover; background-position: center; z-index: 1;
-            animation: zoomEffect 20s infinite alternate; /* হালকা জুম এনিমেশন */
+            animation: slowMotion 30s infinite alternate linear;
         }
 
-        @keyframes zoomEffect {
-            0% { transform: scale(1); }
-            100% { transform: scale(1.1); }
-        }
+        @keyframes slowMotion { 0% { transform: scale(1); } 100% { transform: scale(1.1); } }
 
-        /* হালকা আলোর ইফেক্ট (Glow Effect) */
-        .overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.7) 100%);
-            z-index: 2;
-            animation: pulseGlow 5s infinite;
-        }
+        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2; }
 
-        @keyframes pulseGlow {
-            0%, 100% { opacity: 0.8; }
-            50% { opacity: 0.4; }
-        }
+        .content { position: relative; z-index: 3; text-align: center; color: #FFD700; padding-top: 50px; }
 
-        .container { position: relative; z-index: 3; text-align: center; color: #FFD700; padding-top: 50px; }
-
-        /* লাইভ রিং বাটন এনিমেশন */
-        .live-tag {
-            background: red; color: white; padding: 8px 20px; border-radius: 5px;
-            font-size: 22px; font-weight: bold; display: inline-block;
-            box-shadow: 0 0 20px red; animation: blink 1.5s infinite;
-        }
+        .live-tag { background: red; color: white; padding: 5px 15px; border-radius: 5px; font-weight: bold; animation: blink 1.2s infinite; }
         @keyframes blink { 50% { opacity: 0.3; } }
 
-        .para-info {
-            font-size: 35px; margin-top: 30px; text-shadow: 0 0 15px #000;
-            background: rgba(0,0,0,0.6); padding: 15px 40px; border-radius: 50px;
-            display: inline-block; border: 2px solid #FFD700;
-        }
+        .para-display { font-size: 32px; margin: 20px 0; border: 2px solid #FFD700; padding: 15px 40px; border-radius: 50px; display: inline-block; background: rgba(0,0,0,0.7); }
 
-        /* নিচের বাটন লিস্ট (এটি লাইভে দেখাবে না, শুধু আপনার জন্য) */
-        .admin-panel {
-            position: fixed; bottom: 0; width: 100%; background: rgba(0,0,0,0.9);
-            z-index: 10; padding: 10px; max-height: 200px; overflow-y: auto;
-            display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px;
-        }
-        .btn { background: #333; color: #FFD700; border: 1px solid #FFD700; padding: 5px; cursor: pointer; font-size: 12px; }
+        /* ২. স্টপ বাটন */
+        .stop-btn { background: #ff0000; color: white; border: none; padding: 12px 25px; border-radius: 8px; font-weight: bold; cursor: pointer; display: none; margin: 0 auto; }
+
+        .controls { position: fixed; bottom: 0; width: 100%; background: rgba(0,0,0,0.9); z-index: 10; padding: 15px; max-height: 220px; overflow-y: auto; display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+        .btn { background: #333; color: #FFD700; border: 1px solid #FFD700; padding: 10px; cursor: pointer; border-radius: 5px; font-size: 13px; font-weight: bold; }
         
-        #copyMsg { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); 
-                   background: green; color: white; padding: 20px; border-radius: 10px; display: none; z-index: 20; }
-        
-        audio { display: none; }
+        #msg { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #28a745; color: white; padding: 20px; border-radius: 10px; display: none; z-index: 100; font-weight: bold; }
     </style>
 </head>
 <body>
 
-    <div class="video-container"></div>
+    <div class="video-bg"></div>
     <div class="overlay"></div>
-    <div id="copyMsg">লিঙ্ক কপি হয়েছে! Go Live অ্যাপে দিন।</div>
+    <div id="msg">লিঙ্ক কপি হয়েছে! এখন Go Live অ্যাপে পেস্ট করুন।</div>
 
-    <div class="container">
+    <div class="content">
         <div class="live-tag">● LIVE STREAMING</div> <br>
-        <div class="para-info" id="status">পারা নির্বাচন করুন</div>
+        <div class="para-display" id="paraTitle">পারা নির্বাচন করুন</div> <br>
+        <button class="stop-btn" id="stopBtn" onclick="stopMusic()">বন্ধ করুন (STOP)</button>
     </div>
 
-    <div class="admin-panel" id="controls"></div>
+    <div class="controls" id="btnBox"></div>
 
-    <audio id="audioPlayer" controls loop></audio>
+    <audio id="quranAudio" loop></audio>
 
     <script>
-        const controls = document.getElementById('controls');
-        const status = document.getElementById('status');
-        const audio = document.getElementById('audioPlayer');
-        const currentUrl = window.location.href.split('?')[0];
+        const btnBox = document.getElementById('btnBox');
+        const paraTitle = document.getElementById('paraTitle');
+        const stopBtn = document.getElementById('stopBtn');
+        const quranAudio = document.getElementById('quranAudio');
 
-        // ৩০টি পারার জন্য কন্ট্রোল বাটন তৈরি
+        // আপনার সঠিক ওয়েবসাইট লিঙ্ক (এটি স্বয়ংক্রিয়ভাবে মেইন লিঙ্ক নিয়ে নেবে)
+        const mySite = window.location.href.split('?')[0];
+
         for (let i = 1; i <= 30; i++) {
             let b = document.createElement('button');
             b.className = 'btn';
             b.innerText = "পারা " + i;
             b.onclick = () => {
-                const link = currentUrl + "?para=" + i;
-                navigator.clipboard.writeText(link);
-                document.getElementById('copyMsg').style.display = 'block';
-                setTimeout(()=> document.getElementById('copyMsg').style.display='none', 2000);
-                playPara(i);
+                // ডাইনামিক লিঙ্ক তৈরি যা Go Live এ কাজ করবে
+                const liveLink = mySite + "?para=" + i;
+                
+                // লিঙ্ক কপি করা
+                const el = document.createElement('textarea');
+                el.value = liveLink;
+                document.body.appendChild(el);
+                el.select();
+                document.execCommand('copy');
+                document.body.removeChild(el);
+
+                document.getElementById('msg').style.display = 'block';
+                setTimeout(() => document.getElementById('msg').style.display = 'none', 3000);
+                
+                runPara(i);
             };
-            controls.appendChild(b);
+            btnBox.appendChild(b);
         }
 
-        function playPara(n) {
-            const f = n.toString().padStart(3, '0');
-            audio.src = `https://server8.mp3quran.net/afs/${f}.mp3`;
-            status.innerText = "পারা " + n + " তিলাওয়াত চলছে";
-            audio.play();
+        function runPara(n) {
+            const pad = n.toString().padStart(3, '0');
+            quranAudio.src = `https://server8.mp3quran.net/afs/${pad}.mp3`;
+            paraTitle.innerText = "পারা " + n + " তিলাওয়াত";
+            stopBtn.style.display = 'block';
+            quranAudio.play();
         }
 
-        // লাইভ লিঙ্কের জন্য অটো প্লে
+        function stopMusic() {
+            quranAudio.pause();
+            quranAudio.src = "";
+            paraTitle.innerText = "বন্ধ আছে";
+            stopBtn.style.display = 'none';
+        }
+
+        // লাইভ লিঙ্কের মাধ্যমে আসলে অটো স্টার্ট
         const urlParams = new URLSearchParams(window.location.search);
-        if(urlParams.get('para')) {
-            playPara(urlParams.get('para'));
-            controls.style.display = 'none'; // লাইভ চলাকালীন বাটনগুলো লুকিয়ে রাখবে
+        const p = urlParams.get('para');
+        if (p) {
+            runPara(p);
+            btnBox.style.display = 'none'; // লাইভে বাটন দেখাবে না
         }
 
-        window.onclick = () => audio.play();
+        window.onclick = () => { if(quranAudio.src) quranAudio.play(); };
     </script>
 </body>
 </html>
